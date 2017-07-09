@@ -9,13 +9,8 @@ Created on Mon May  1 19:29:51 2017
 # coding: utf-8
 
 # In[35]:
-import json
-import datetime
 import requests
-import pandas as pd
-import numpy as np
 from bs4 import BeautifulSoup
-
 
 
 
@@ -25,9 +20,7 @@ def us_airport_check(us_airports, airport):
 
 #This code will make a call to Sabre to get flight information
 def apiCall(us_airports, us_airlines, OriginCity, DestCity, TripInd, DepartureDateString, ReturnDateString, number_itineraries, key, ServiceClass):
-#    number_itineraries = 50
 
-#    ServiceClass = "Y"
     startOriginString =  "<OriginLocation LocationCode="
     startDestString =  "<DestinationLocation LocationCode="
     endString = " />"
@@ -99,7 +92,6 @@ def apiCall(us_airports, us_airlines, OriginCity, DestCity, TripInd, DepartureDa
                 """ 
 
     try:
-    #if origCode != "N/A":    
         if TripInd == "RoundTrip":
             requestBody = """<?xml version='1.0' encoding='UTF-8'?>
             <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
@@ -253,6 +245,7 @@ def apiCall(us_airports, us_airlines, OriginCity, DestCity, TripInd, DepartureDa
                     </OTA_AirLowFareSearchRQ>
                 </SOAP-ENV:Body>
             </SOAP-ENV:Envelope>"""            
+
         url="https://webservices.havail.sabre.com"
         headers = {'content-type': 'text/xml'}
         answer = requests.post(url,data=requestBody,headers=headers)
@@ -262,7 +255,6 @@ def apiCall(us_airports, us_airlines, OriginCity, DestCity, TripInd, DepartureDa
 
         #Go through each returned itinerary and only include those that use an US Flagged Carrier if they are flighting to/from US
         itinerary_sequences_dict = {}
-#        print(len(all_itineraries_soup.find_all('PricedItinerary'.lower())))
         for elem in all_itineraries_soup.find_all('PricedItinerary'.lower()):    
             #Get the price for each itinerary
             for price in elem.find_all('TotalFare'.lower(), decimalplaces=True):
@@ -290,7 +282,6 @@ def apiCall(us_airports, us_airlines, OriginCity, DestCity, TripInd, DepartureDa
         try:
             print(all_itineraries)
         except:
-#            print(origCode + " | " + destCode + " | " + ReturnOriginString + " | " + ReturnDestString + " | " + TripInd)
             print(lowest_priced_itinerary)
         return "N/A"
 
