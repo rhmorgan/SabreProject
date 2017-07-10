@@ -57,9 +57,12 @@ def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itine
     requestData['RT Raw Itinerary']  = requestData['OW Raw Itinerary'].astype(object)
     for index, row in requestData.iterrows():
         apiResults = Code.SabreAPICall.apiCall(us_airports, us_airlines, str(requestData['Departure Airport Code'][index]), str(requestData['Destination Airport Code'][index]), "OneWay", DepartureDateString, ReturnDateString, number_itineraries, key, ServiceClass)
-        requestData['OW Raw Itinerary'][index] = apiResults 
+        #requestData['OW Raw Itinerary'][index] = apiResults 
+        requestData.loc[[index], ['OW Raw Itinerary']]= str(apiResults)             
+#        requestData.loc[index:index:,('OW Raw Itinerary')]=apiResults 
         apiResults = Code.SabreAPICall.apiCall(us_airports, us_airlines, str(requestData['Departure Airport Code'][index]), str(requestData['Destination Airport Code'][index]), "RoundTrip", DepartureDateString, ReturnDateString, number_itineraries, key, ServiceClass)
-        requestData['RT Raw Itinerary'][index] = apiResults 
+        #requestData['RT Raw Itinerary'][index] = apiResults 
+        requestData.loc[[index], ['RT Raw Itinerary']]= str(apiResults)                        
         print('CLASS:'+ServiceClass+' ORG:'+str(requestData['Departure Airport Code'][index])+' DES:'+str(requestData['Destination Airport Code'][index])+' '+str(((index+1)/len(requestData.index))*100)+'% Complete')
 
 

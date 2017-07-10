@@ -10,10 +10,10 @@ import os.path
 import Code.ProduceNTEFares
 
 #Set your major parameters here
-DepartureDateString = "2017-08-10"
-ReturnDateString = "2017-08-17"
+DepartureDateString = "2017-08-12"
+ReturnDateString = "2017-08-20"
 filetoload = "\ResultFiles\import_file.csv"
-number_itineraries = 50
+number_itineraries = 200
 
 
 my_path = os.path.abspath(os.path.dirname(__file__))
