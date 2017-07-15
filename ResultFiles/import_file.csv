@@ -1,3 +1,101 @@
-Departure Airport Code,Destination Airport Code,Comments
-ATH,LON,
-DCA,ATL,"depart SAT to arrive SUN / YCA for JFK,IAD (FY17) "
+Departure Airport Code,Dep City,Dep State,Dep Country,Destination Airport Code,Destination City,Destination State,Destination Country,u_depart_date,u_return_date,u_business_class_indicator,COMMENTS
+PWM,,,,EBL,,,,8/18/2017,8/21/2017,Coach,
+IAD,,,,BKK,,,,8/4/2017,8/20/2017,Coach,
+IAD,,,,DAC,,,,7/16/2017,8/15/2017,Business,
+WAS,,,,GYD,,,,9/5/2017,9/22/2017,Business,
+DCA,,,,ADA,,,,8/18/2017,10/20/2017,Coach,
+IAD,,,,KEF,,,,7/14/2017,7/15/2017,Coach,
+IAD,,,,KEF,,,,7/14/2017,7/15/2017,Coach,
+IAD,,,,FRA,,,,10/10/2017,10/17/2017,Coach,
+IAD,,,,ESB,,,,8/1/2017,8/5/2017,Business,
+IAD,,,,ESB,,,,8/1/2017,8/5/2017,Coach,
+IAD,,,,DBV,,,,7/24/2017,7/30/2017,Coach,
+DCA,,,,NOC,,,,7/19/2017,10/9/2017,Coach,
+ISB,,,,BOI,,,,8/10/2017,8/17/2017,Coach,
+SBA,,,,DXB,,,,7/17/2017,7/21/2017,Business,
+RDU,,,,ADL,,,,9/19/2017,10/9/2017,Coach,
+IAD,,,,TGD,,,,7/26/2017,8/3/2017,Business,
+ISB,,,,BOI,,,,8/10/2017,8/17/2017,Coach,
+SBA,,,,DXB,,,,11/10/2017,11/17/2017,Coach,
+BWI,,,,AMM,,,,9/30/2017,10/7/2017,Coach,
+IAD,,,,EBL,,,,7/22/2017,8/26/2017,Business,
+BKK,,,,PNS,,,,8/12/2017,8/30/2017,Coach,
+BKK,,,,RIC,,,,8/26/2017,9/2/2017,Business,
+BKK,,,,RIC,,,,8/26/2017,9/2/2017,Business,
+BKK,,,,RIC,,,,8/26/2017,9/2/2017,Business,
+BOG,,,,CVG,,,,10/5/2017,10/26/2017,Coach,
+IAD,,,,ASB,,,,7/31/2017,9/20/2017,Business,
+BOG,,,,MIA,,,,10/5/2017,10/26/2017,Coach,
+ISB,,,,CHO,,,,9/15/2017,10/5/2017,Coach,
+IAD,,,,MCT,,,,7/26/2017,7/28/2017,Business,
+HEL,,,,VPS,,,,7/18/2017,7/22/2017,Coach,
+BKK,,,,HND,,,,7/31/2017,8/4/2017,Coach,
+LCA,,,,IAD,,,,10/1/2017,10/8/2017,Business,
+IAD,,,,KBL,,,,11/1/2017,11/10/2017,Coach,
+IAD,,,,KBL,,,,11/1/2017,11/2/2018,Business,
+WLG,,,,IAD,,,,10/3/2017,10/4/2017,Coach,
+TLV,,,,LAS,,,,10/13/2017,11/4/2017,Coach,
+TLV,,,,LAS,,,,10/13/2017,11/4/2017,Coach,
+CMB,,,,IAD,,,,8/31/2017,9/10/2017,Business,
+CMB,,,,IAD,,,,8/31/2017,9/10/2017,Business,
+NRT,,,,KBL,,,,7/19/2017,9/15/2017,Business,
+CBR,,,,IAD,,,,8/5/2017,8/20/2017,Business,
+BKK,,,,TYO,,,,7/31/2017,8/4/2017,Coach,
+SIN,,,,IAD,,,,7/19/2017,8/20/2017,Coach,
+IAD,,,,CCS,,,,7/26/2017,7/31/2017,Coach,
+BKK,,,,KBL,,,,9/7/2017,10/1/2017,Business,
+IAD,,,,ICN,,,,7/30/2017,8/4/2017,Coach,
+IAD,,,,OTP,,,,8/15/2017,8/20/2017,Coach,
+BKK,,,,NRT,,,,7/19/2017,7/22/2017,Business,
+BKK,,,,NRT,,,,7/19/2017,7/22/2017,Business,
+WAS,,,,SIN,,,,8/20/2017,8/31/2017,Business,
+CPH,,,,COS,,,,7/21/2017,8/20/2017,Coach,
+RDU,,,,SIN,,,,8/16/2017,8/18/2017,Coach,
+DEN,,,,CPH,,,,9/12/2017,9/13/2017,Coach,
+TLV,,,,WAS,,,,8/28/2017,10/17/2017,Coach,
+DAC,,,,DXB,,,,8/14/2017,9/25/2017,Coach,
+VCE,,,,DXB,,,,10/7/2017,10/9/2017,Coach,
+TYO,,,,PHF,,,,7/26/2017,8/9/2017,Business,
+DCA,,,,SEA,,,,10/22/2017,11/25/2017,Coach,
+KHI,,,,CGK,,,,9/9/2017,9/16/2017,Coach,
+IAD,,,,KBP,,,,8/15/2017,8/18/2017,Coach,
+IAD,,,,VLD,,,,7/25/2017,8/5/2017,Coach,
+IAD,,,,VLD,,,,7/25/2017,8/5/2017,Coach,
+RIC,,,,MYR,,,,8/26/2017,8/31/2017,Coach,
+IAD,,,,SBA,,,,7/22/2017,7/31/2017,Coach,
+IAD,,,,SBA,,,,8/14/2017,8/17/2017,Coach,
+WAS,,,,UVF,,,,8/21/2017,8/26/2017,Coach,
+WAS,,,,UVF,,,,8/21/2017,8/26/2017,Coach,
+BOG,,,,EWR,,,,7/31/2017,8/20/2017,Coach,
+MLA,,,,LHR,,,,7/27/2017,7/28/2017,Coach,
+BKK,,,,TAS,,,,8/21/2017,8/27/2017,Coach,
+IAD,,,,LAX,,,,7/31/2017,8/20/2017,Coach,
+DCA,,,,JFK,,,,7/14/2017,7/28/2017,Business,
+DCA,,,,JFK,,,,7/14/2017,7/28/2017,Business,
+BKK,,,,SYD,,,,7/17/2017,7/31/2017,Coach,Date in the past had to change
+EBL,,,,WAS,,,,7/17/2017,7/26/2017,Business,Date in the past had to change
+BEY,,,,BOS,,,,7/17/2017,7/27/2017,Coach,Date in the past had to change
+BKK,,,,SYD,,,,7/17/2017,7/21/2017,Coach,Date in the past had to change. No flights to BWU used SYD
+RBA,,,,BTV,,,,7/17/2017,9/5/2017,Coach,Date in the past had to change
+MYR,,,,IAD,,,,7/17/2017,7/21/2017,Coach,Date in the past had to change
+BKK,,,,BNA,,,,7/17/2017,7/21/2017,Coach,Date in the past had to change
+BKK,,,,SYD,,,,7/17/2017,7/21/2017,Coach,Date in the past had to change. No flights to BWU used SYD
+AUH,,,,EBL,,,,7/17/2017,7/21/2017,Coach,Date in the past had to change
+BKK,,,,SYD,,,,7/17/2017,7/25/2017,Coach,Date in the past had to change. No flights to BWU used SYD
+MSY,,,,GTR,,,,7/17/2017,7/21/2017,Coach,Date in the past had to change
+IAD,,,,SGF,,,,7/17/2017,7/21/2017,Coach,Date in the past had to change
+DCA,,,,ROA,,,,7/17/2017,7/21/2017,Coach,Date in the past had to change
+BKK,,,,PNS,,,,7/17/2017,7/31/2017,Coach,Date in the past had to change
+IAD,,,,BIO,,,,7/17/2017,7/21/2017,Coach,Date in the past had to change
+BKK,,,,PFN,,,,7/17/2017,8/2/2017,Coach,Date in the past had to change
+IAD,,,,CWA,,,,7/23/2017,7/30/2017,Coach,No Flights to AUW used CWA
+LHR,,,,PHL,,,,7/24/2017,7/28/2017,Coach,No Flights to ILG use PHL. Meg check if city fare pare. If so use those rates.
+VIE,,,,ECP,,,,7/29/2017,8/11/2017,Coach,No flights to PFN used ECP. Meg check if city fare pare. If so use those rates.
+SJU,,,,GUA,,,,8/2/2017,8/13/2017,Coach,Use flights to SIG used SJU
+IAD,,,,SAF,,,,8/9/2017,8/11/2017,Coach,No flights to LAM used SAF. Meg check if city fare pare. If so use those rates.
+IAD,,,,VPS,,,,8/15/2017,8/17/2017,Coach,No Flights to DSI used VPS. Meg check if city fare pare. If so use those rates.
+TLV,,,,IAD,,,,8/28/2017,8/29/2017,Coach,No flights to SDV used TLV
+ABJ,,,,ROM,,,,10/31/2017,11/18/2017,Coach,No flights to CIA used ROM
+MNL,,,,SYD,,,,12/14/2017,12/28/2017,Coach,No flights to BWU used SYD
+RBA,,,,IAD,,,,8/5/2018,8/26/2018,Coach,
+ORF,,,,MIA,,,,8/31/2018,9/9/2018,Coach,

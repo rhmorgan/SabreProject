@@ -34,9 +34,11 @@ def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itine
 
     print("start:" + str(datetime.datetime.now()))
     data1 = pd.read_csv(datafile)
+    data1 =data1.dropna(axis=0, how='all')
     requestData = data1
     
     #Add any new columns to the file
+    requestData['Service Class'] = ""    
     requestData['OW Trip Begin Date'] = ""
     requestData['OW Fare'] =0
     requestData['OW Passenger Type']=""
@@ -44,6 +46,7 @@ def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itine
     requestData['OW Routing']=""
     requestData['OW Fare Basis']=""
     requestData['RT Trip Begin Date'] = ""
+    requestData['RT Return Date']=""
     requestData['RT Fare'] =0
     requestData['RT Passenger Type']=""
     requestData['RT Fare Calc']=""
@@ -51,19 +54,51 @@ def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itine
     requestData['RT Fare Basis']=""
     requestData['OW Raw Itinerary'] = ""#requestData.apply(Code.SabreAPICall.apiCall(us_airports, us_airlines, "LON", "IAD", "OneWay", DepartureDateString, ReturnDateString, number_itineraries, key), axis=1)
     requestData['RT Raw Itinerary'] = ""#requestData.apply(Code.SabreAPICall.apiCall(us_airports, us_airlines, "LON", "IAD" , "RoundTrip", DepartureDateString, ReturnDateString, number_itineraries, key), axis=1)
+        
     
     #Use API to pull lowest price itenerary and load it into datatable
     requestData['OW Raw Itinerary']  = requestData['OW Raw Itinerary'].astype(object)
     requestData['RT Raw Itinerary']  = requestData['OW Raw Itinerary'].astype(object)
     for index, row in requestData.iterrows():
-        apiResults = Code.SabreAPICall.apiCall(us_airports, us_airlines, str(requestData['Departure Airport Code'][index]), str(requestData['Destination Airport Code'][index]), "OneWay", DepartureDateString, ReturnDateString, number_itineraries, key, ServiceClass)
+        
+        #Code checks the format of the date
+        strDepartDate = str(requestData['u_depart_date'][index])
+        if len(strDepartDate)>3:
+            if '/' in strDepartDate[-4:]:
+                DepartureDate = pd.to_datetime(requestData['u_depart_date'][index], format='%m/%d/%y')
+                DepartureDate = str(DepartureDate)[0:10]
+            else:
+                DepartureDate = pd.to_datetime(requestData['u_depart_date'][index], format='%m/%d/%Y')
+                DepartureDate = str(DepartureDate)[0:10]
+        else: DepartureDate = DepartureDateString
+
+        #Code checks the format of the date
+        strReturnDate = str(requestData['u_return_date'][index])
+        if len(strReturnDate)>3:
+            if '/' in strReturnDate[-4:]:
+                ReturnDate  = pd.to_datetime(requestData['u_return_date'][index], format='%m/%d/%y')
+                ReturnDate  = str(ReturnDate)[0:10]
+            else:
+                ReturnDate  = pd.to_datetime(requestData['u_return_date'][index], format='%m/%d/%Y')
+                ReturnDate  = str(ReturnDate)[0:10]
+        else: ReturnDate  = ReturnDateString
+                    
+        if len(requestData['u_business_class_indicator'][index])>0:
+                if requestData['u_business_class_indicator'][index].upper() in ('BUSINESS', 'C'):
+                    varServiceClass = "C"
+                else: varServiceClass = "Y"
+        else: varServiceClass = ServiceClass
+        requestData.loc[[index], ['Service Class']]= varServiceClass
+
+
+        apiResults = Code.SabreAPICall.apiCall(us_airports, us_airlines, str(requestData['Departure Airport Code'][index]), str(requestData['Destination Airport Code'][index]), "OneWay", DepartureDate, ReturnDate, number_itineraries, key, varServiceClass)
         #requestData['OW Raw Itinerary'][index] = apiResults 
         requestData.loc[[index], ['OW Raw Itinerary']]= str(apiResults)             
 #        requestData.loc[index:index:,('OW Raw Itinerary')]=apiResults 
-        apiResults = Code.SabreAPICall.apiCall(us_airports, us_airlines, str(requestData['Departure Airport Code'][index]), str(requestData['Destination Airport Code'][index]), "RoundTrip", DepartureDateString, ReturnDateString, number_itineraries, key, ServiceClass)
+        apiResults = Code.SabreAPICall.apiCall(us_airports, us_airlines, str(requestData['Departure Airport Code'][index]), str(requestData['Destination Airport Code'][index]), "RoundTrip", DepartureDate, ReturnDate, number_itineraries, key, varServiceClass)
         #requestData['RT Raw Itinerary'][index] = apiResults 
         requestData.loc[[index], ['RT Raw Itinerary']]= str(apiResults)                        
-        print('CLASS:'+ServiceClass+' ORG:'+str(requestData['Departure Airport Code'][index])+' DES:'+str(requestData['Destination Airport Code'][index])+' '+str(((index+1)/len(requestData.index))*100)+'% Complete')
+        print('CLASS:'+varServiceClass+' ORG:'+str(requestData['Departure Airport Code'][index])+' DES:'+str(requestData['Destination Airport Code'][index])+' '+str(((index+1)/len(requestData.index))*100)+'% Complete')
 
 
     #Export the raw itenerary table in case there is a problem
