@@ -54,7 +54,9 @@ def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itine
     requestData['RT Fare Basis']=""
     requestData['OW Raw Itinerary'] = ""#requestData.apply(Code.SabreAPICall.apiCall(us_airports, us_airlines, "LON", "IAD", "OneWay", DepartureDateString, ReturnDateString, number_itineraries, key), axis=1)
     requestData['RT Raw Itinerary'] = ""#requestData.apply(Code.SabreAPICall.apiCall(us_airports, us_airlines, "LON", "IAD" , "RoundTrip", DepartureDateString, ReturnDateString, number_itineraries, key), axis=1)
-        
+    if 'u_depart_date' not in requestData.columns: requestData['u_depart_date'] = ""        
+    if 'u_return_date' not in requestData.columns: requestData['u_return_date'] = ""        
+    if 'u_business_class_indicator' not in requestData.columns: requestData['u_business_class_indicator'] = ""        
     
     #Use API to pull lowest price itenerary and load it into datatable
     requestData['OW Raw Itinerary']  = requestData['OW Raw Itinerary'].astype(object)
@@ -83,7 +85,7 @@ def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itine
                 ReturnDate  = str(ReturnDate)[0:10]
         else: ReturnDate  = ReturnDateString
                     
-        if len(requestData['u_business_class_indicator'][index])>0:
+        if len(str(requestData['u_business_class_indicator'][index]))!=3:
                 if requestData['u_business_class_indicator'][index].upper() in ('BUSINESS', 'C'):
                     varServiceClass = "C"
                 else: varServiceClass = "Y"
