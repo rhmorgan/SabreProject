@@ -12,7 +12,7 @@ import datetime
 import pandas as pd
 from bs4 import BeautifulSoup
 
-def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itineraries, key, ServiceClass):
+def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itineraries, key, ServiceClass, GenerateReverseInd, DaysToTry):
 
     #Load List with American Flagged Carriers
     us_airlines = []
@@ -52,15 +52,32 @@ def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itine
     requestData['RT Fare Calc']=""
     requestData['RT Routing']=""
     requestData['RT Fare Basis']=""
-    requestData['OW Raw Itinerary'] = ""#requestData.apply(Code.SabreAPICall.apiCall(us_airports, us_airlines, "LON", "IAD", "OneWay", DepartureDateString, ReturnDateString, number_itineraries, key), axis=1)
-    requestData['RT Raw Itinerary'] = ""#requestData.apply(Code.SabreAPICall.apiCall(us_airports, us_airlines, "LON", "IAD" , "RoundTrip", DepartureDateString, ReturnDateString, number_itineraries, key), axis=1)
+
+
+    if 'OW Raw Itinerary' not in requestData.columns:
+        requestData['OW Raw Itinerary'] = ""
+        requestData['OW Raw Itinerary']  = requestData['OW Raw Itinerary'].astype(object)
+    if 'RT Raw Itinerary' not in requestData.columns:
+        requestData['RT Raw Itinerary'] = ""
+        requestData['RT Raw Itinerary']  = requestData['RT Raw Itinerary'].astype(object)
     if 'u_depart_date' not in requestData.columns: requestData['u_depart_date'] = ""        
     if 'u_return_date' not in requestData.columns: requestData['u_return_date'] = ""        
     if 'u_business_class_indicator' not in requestData.columns: requestData['u_business_class_indicator'] = ""        
-    
+
+    if GenerateReverseInd == "Y":
+        requestData['OW_R Trip Begin Date'] = ""
+        requestData['OW_R Return Date']=""
+        requestData['OW_R Fare'] =0
+        requestData['OW_R Passenger Type']=""
+        requestData['OW_R Fare Calc']=""
+        requestData['OW_R Routing']=""
+        requestData['OW_R Fare Basis']=""
+        if 'OW_R Raw Itinerary' not in requestData.columns:
+            requestData['OW_R Raw Itinerary'] = ""
+            requestData['OW_R Raw Itinerary']  = requestData['OW_R Raw Itinerary'].astype(object)
+                                                                                                                                                          
     #Use API to pull lowest price itenerary and load it into datatable
-    requestData['OW Raw Itinerary']  = requestData['OW Raw Itinerary'].astype(object)
-    requestData['RT Raw Itinerary']  = requestData['OW Raw Itinerary'].astype(object)
+
     for index, row in requestData.iterrows():
         
         #Code checks the format of the date
@@ -85,7 +102,7 @@ def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itine
                 ReturnDate  = str(ReturnDate)[0:10]
         else: ReturnDate  = ReturnDateString
                     
-        if len(str(requestData['u_business_class_indicator'][index]))!=3:
+        if len(str(requestData['u_business_class_indicator'][index]))>0:
                 if requestData['u_business_class_indicator'][index].upper() in ('BUSINESS', 'C'):
                     varServiceClass = "C"
                 else: varServiceClass = "Y"
@@ -93,14 +110,21 @@ def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itine
         requestData.loc[[index], ['Service Class']]= varServiceClass
 
 
-        apiResults = Code.SabreAPICall.apiCall(us_airports, us_airlines, str(requestData['Departure Airport Code'][index]), str(requestData['Destination Airport Code'][index]), "OneWay", DepartureDate, ReturnDate, number_itineraries, key, varServiceClass)
-        #requestData['OW Raw Itinerary'][index] = apiResults 
-        requestData.loc[[index], ['OW Raw Itinerary']]= str(apiResults)             
-#        requestData.loc[index:index:,('OW Raw Itinerary')]=apiResults 
-        apiResults = Code.SabreAPICall.apiCall(us_airports, us_airlines, str(requestData['Departure Airport Code'][index]), str(requestData['Destination Airport Code'][index]), "RoundTrip", DepartureDate, ReturnDate, number_itineraries, key, varServiceClass)
-        #requestData['RT Raw Itinerary'][index] = apiResults 
-        requestData.loc[[index], ['RT Raw Itinerary']]= str(apiResults)                        
+        if len(str(requestData.loc[[index], ['OW Raw Itinerary']]))<50:  
+            apiResults = Code.SabreAPICall.apiCall(us_airports, us_airlines, str(requestData['Departure Airport Code'][index]), str(requestData['Destination Airport Code'][index]), "OneWay", DepartureDate, ReturnDate, number_itineraries, key, varServiceClass, DaysToTry)
+            requestData.loc[[index], ['OW Raw Itinerary']]= str(apiResults)             
+
+        if len(str(requestData.loc[[index], ['RT Raw Itinerary']]))<50:  
+            apiResults = Code.SabreAPICall.apiCall(us_airports, us_airlines, str(requestData['Departure Airport Code'][index]), str(requestData['Destination Airport Code'][index]), "RoundTrip", DepartureDate, ReturnDate, number_itineraries, key, varServiceClass, DaysToTry)
+            requestData.loc[[index], ['RT Raw Itinerary']]= str(apiResults)                        
+
+        if GenerateReverseInd == "Y":
+            if len(str(requestData.loc[[index], ['OW_R Raw Itinerary']]))<50:  
+                apiResults = Code.SabreAPICall.apiCall(us_airports, us_airlines, str(requestData['Destination Airport Code'][index]), str(requestData['Departure Airport Code'][index]), "OneWay", DepartureDate, ReturnDate, number_itineraries, key, varServiceClass, DaysToTry)
+                requestData.loc[[index], ['OW_R Raw Itinerary']]= str(apiResults)                        
+
         print('CLASS:'+varServiceClass+' ORG:'+str(requestData['Departure Airport Code'][index])+' DES:'+str(requestData['Destination Airport Code'][index])+' '+str(((index+1)/len(requestData.index))*100)+'% Complete')
+
 
 
     #Export the raw itenerary table in case there is a problem
@@ -114,7 +138,7 @@ def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itine
     for index, row in requestData.iterrows():
         if len(str(requestData['OW Raw Itinerary'][index])) > 2:
             itinerary_soup = BeautifulSoup(str(requestData['OW Raw Itinerary'][index]), 'html.parser')
-            requestData.loc[index:index:,('OW Trip Begin Date')]= itinerary_soup .find('flightsegment'.lower())['departuredatetime']
+            requestData.loc[index:index:,('OW Trip Begin Date')]= itinerary_soup.find('flightsegment'.lower())['departuredatetime']
             requestData.loc[index:index:,('OW Fare')] = float(itinerary_soup.find('TotalFare'.lower(), decimalplaces=True)['amount'])
             requestData.loc[index:index:,('OW Passenger Type')] = itinerary_soup.find('PassengerTypeQuantity'.lower())['code']
             requestData.loc[index:index:,('OW Fare Calc')] = itinerary_soup.find('FareCalcLine'.lower())['info']
@@ -132,7 +156,7 @@ def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itine
     for index, row in requestData.iterrows():
         if len(str(requestData['RT Raw Itinerary'][index])) > 2:
             itinerary_soup = BeautifulSoup(str(requestData['RT Raw Itinerary'][index]), 'html.parser')
-            requestData.loc[index:index:,('RT Trip Begin Date')] = itinerary_soup .find('flightsegment'.lower())['departuredatetime']
+            requestData.loc[index:index:,('RT Trip Begin Date')] = itinerary_soup.find('flightsegment'.lower())['departuredatetime']
             requestData.loc[index:index:,('RT Fare')] = float(itinerary_soup.find('TotalFare'.lower(), decimalplaces=True)['amount'])
             requestData.loc[index:index:,('RT Passenger Type')] = itinerary_soup.find('PassengerTypeQuantity'.lower())['code']
             requestData.loc[index:index:,('RT Fare Calc')] = itinerary_soup.find('FareCalcLine'.lower())['info']
@@ -145,6 +169,24 @@ def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itine
             for elem in itinerary_soup.find_all('farebasiscode'.lower()):
                 fare_basis = fare_basis + (elem.string + '-')
             requestData.loc[index:index:,('RT Fare Basis')]=fare_basis
+
+    if GenerateReverseInd == "Y":
+        for index, row in requestData.iterrows():
+            if len(str(requestData['OW_R Raw Itinerary'][index])) > 2:
+                itinerary_soup = BeautifulSoup(str(requestData['OW_R Raw Itinerary'][index]), 'html.parser')
+                requestData.loc[index:index:,('OW_R Trip Begin Date')]= itinerary_soup.find('flightsegment'.lower())['departuredatetime']
+                requestData.loc[index:index:,('OW_R Fare')] = float(itinerary_soup.find('TotalFare'.lower(), decimalplaces=True)['amount'])
+                requestData.loc[index:index:,('OW_R Passenger Type')] = itinerary_soup.find('PassengerTypeQuantity'.lower())['code']
+                requestData.loc[index:index:,('OW_R Fare Calc')] = itinerary_soup.find('FareCalcLine'.lower())['info']
+                routing = ""
+                for elem in itinerary_soup.find_all('flightsegment'.lower()):
+                    routing = routing + (elem.find('departureairport')['locationcode'] + '-' + elem.find('marketingairline')['code'] + elem['flightnumber'] +'|' 
+                    + elem.find('operatingairline')['code'] + elem.find('operatingairline')['flightnumber'] +'(' + elem['resbookdesigcode'] +')-' +elem.find('arrivalairport')['locationcode'] + ' ')
+                requestData.loc[index:index:,('OW_R Routing')]=routing
+                fare_basis = ""
+                for elem in itinerary_soup.find_all('farebasiscode'.lower()):
+                    fare_basis = fare_basis + (elem.string + '-')
+                requestData.loc[index:index:,('OW_R Fare Basis')]=fare_basis
     
     
     #Create the final version of the file    

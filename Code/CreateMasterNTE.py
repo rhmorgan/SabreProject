@@ -43,6 +43,8 @@ def CreateMasterNTEList(NewDatafile, PathtoMasterNTEFile):
         MasterNTEFile['SortList'][index] = [
             MasterNTEFile['Destination Airport Code'][index], MasterNTEFile['Departure Airport Code'][index]
             ]
+#        print("Dest:" + MasterNTEFile['Destination Airport Code'][index] +"|DEP:"+MasterNTEFile['Departure Airport Code'][index] )
+        
         MasterNTEFile['SortList'][index].sort()    
     
         #Break out dest and arrival
