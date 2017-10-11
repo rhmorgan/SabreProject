@@ -21,9 +21,9 @@ def us_airport_check(us_airports, airport):
     return any(e['iata'] == airport for e in us_airports)   
 
 
-def apiCall(us_airports, us_airlines, origin_airport, destination_airport, OW_RT_Desc, DepartureDate, ReturnDateString, number_itineraries, key, ServiceClass, DaysToTry):
+def apiCall(us_airports, us_airlines, origin_airport, destination_airport, OW_RT_Desc, DepartureDate, ReturnDateString, number_itineraries, key, ServiceClass, DaysToTry, HoursBtwnMinFlight):
     add_days_counter=1    
-    api = SabreApiCall(us_airports, us_airlines, origin_airport, destination_airport, OW_RT_Desc, DepartureDate, ReturnDateString, number_itineraries, key, ServiceClass)
+    api = SabreApiCall(us_airports, us_airlines, origin_airport, destination_airport, OW_RT_Desc, DepartureDate, ReturnDateString, number_itineraries, key, ServiceClass, HoursBtwnMinFlight)
 
     while (len(api)==0 and add_days_counter<DaysToTry):
         date_1 = datetime.strptime(DepartureDate, "%Y-%m-%d")
@@ -34,7 +34,7 @@ def apiCall(us_airports, us_airlines, origin_airport, destination_airport, OW_RT
         a = str(date_1 + timedelta(days=add_days_counter))
         newReturnDateString = a[0:10]       
 
-        api = SabreApiCall(us_airports, us_airlines, origin_airport, destination_airport, OW_RT_Desc, newDepartureDateString, newReturnDateString, number_itineraries, key, ServiceClass)
+        api = SabreApiCall(us_airports, us_airlines, origin_airport, destination_airport, OW_RT_Desc, newDepartureDateString, newReturnDateString, number_itineraries, key, ServiceClass, HoursBtwnMinFlight)
         add_days_counter=add_days_counter+1
 
     print(len(api))
@@ -44,7 +44,7 @@ def apiCall(us_airports, us_airlines, origin_airport, destination_airport, OW_RT
 
 
 #This code will make a call to Sabre to get flight information
-def SabreApiCall(us_airports, us_airlines, OriginCity, DestCity, TripInd, DepartureDateString, ReturnDateString, number_itineraries, key, ServiceClass):
+def SabreApiCall(us_airports, us_airlines, OriginCity, DestCity, TripInd, DepartureDateString, ReturnDateString, number_itineraries, key, ServiceClass, HoursBtwnMinFlight):
 
     startOriginString =  "<OriginLocation LocationCode="
     startDestString =  "<DestinationLocation LocationCode="
@@ -283,8 +283,22 @@ def SabreApiCall(us_airports, us_airlines, OriginCity, DestCity, TripInd, Depart
         for elem in all_itineraries_soup.find_all('PricedItinerary'.lower()):    
             #Get the price for each itinerary
             for price in elem.find_all('TotalFare'.lower(), decimalplaces=True):
-                itinerary_sequences_dict[elem['sequencenumber']] = float(price['amount'])    
+                itinerary_sequences_dict[elem['sequencenumber']] = {"amount": float(price['amount'])}    
+#                itinerary_sequences_dict[elem['sequencenumber']] = float(price['amount'])    
             #Determine if flight goes to/from US and if it is using a US carrier. If not pull it out of itineraries to review
+
+#            for rtime in elem.find_all('airitinerary'.lower(), directionind="Return"):
+#                print(rtime.find('origindestinationoption')['elapsedtime'])
+                
+            elapsedtimes = elem.find_all('origindestinationoption'.lower())
+            
+            if len(elapsedtimes) > 1:
+                itinerary_sequences_dict[elem['sequencenumber']]['et_outbound']=int(elapsedtimes[0]['elapsedtime']) 
+                itinerary_sequences_dict[elem['sequencenumber']]['et_return']=int(elapsedtimes[1]['elapsedtime']) 
+            else:
+                itinerary_sequences_dict[elem['sequencenumber']]['et_outbound']=int(elapsedtimes[0]['elapsedtime']) 
+
+
             for flight in elem.find_all('FlightSegment'.lower()):
                 if (
                     ((us_airport_check(us_airports, flight.find('arrivalairport')['locationcode']) == True) or
@@ -293,10 +307,29 @@ def SabreApiCall(us_airports, us_airlines, OriginCity, DestCity, TripInd, Depart
                     ): 
                     #remove itineraries that don't meet criteria    
                     itinerary_sequences_dict.pop(elem['sequencenumber'], None)
-        
+
+        #Remove Flights With Excessive Times (Outbound Flight)
+        if len(itinerary_sequences_dict)>0:
+            min_itin_time = min(itinerary_sequences_dict, key=lambda x: itinerary_sequences_dict[x]['et_outbound'])
+            min_time = itinerary_sequences_dict[min_itin_time]['et_outbound']
+            
+            for itin in list(itinerary_sequences_dict):
+                if (itinerary_sequences_dict[itin]['et_outbound'] -min_time) > (HoursBtwnMinFlight*60):
+                    itinerary_sequences_dict.pop(itin, None)
+
+        #Remove Flights With Excessive Times (Return Flight)
+        if TripInd == "RoundTrip" and len(itinerary_sequences_dict)>0: 
+            min_itin_time = min(itinerary_sequences_dict, key=lambda x: itinerary_sequences_dict[x]['et_return'])
+            min_time = itinerary_sequences_dict[min_itin_time]['et_return']
+            
+            for itin in list(itinerary_sequences_dict):
+                if (itinerary_sequences_dict[itin]['et_return'] -min_time) > (HoursBtwnMinFlight*60):
+                    itinerary_sequences_dict.pop(itin, None)
+
         #Determine the lowest cost itinerary
         if len(itinerary_sequences_dict)>0:
-            lowest_priced_sequence_key = min(itinerary_sequences_dict, key=itinerary_sequences_dict.get) 
+            lowest_priced_sequence_key = min(itinerary_sequences_dict, key=lambda x: itinerary_sequences_dict[x]['amount'])
+#            lowest_priced_sequence_key = min(itinerary_sequences_dict, key=itinerary_sequences_dict.get) 
         else:
             lowest_priced_sequence_key=0
         #Select the lowest price itinerary            
@@ -305,8 +338,10 @@ def SabreApiCall(us_airports, us_airlines, OriginCity, DestCity, TripInd, Depart
         
     except:
         try:
-            print(all_itineraries)
+            print("Tried:Error")
+            #print(all_itineraries)
         except:
-            print(lowest_priced_itinerary)
-        return "N/A"
+            print("Except:Error")
+            #print(lowest_priced_itinerary)
+        return "[]"
 

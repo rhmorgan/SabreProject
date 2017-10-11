@@ -18,9 +18,9 @@ import Code.ProduceCityPareFaresTaxes
 #import Code.CreateMasterNTE
 
 #Set your major parameters here
-DepartureDateString = "2017-10-09"
+DepartureDateString = "2017-12-01"
 #filetoload = "\ResultFiles\import_file.csv"
-filetoload = "\ResultFiles\import_file.csv"
+filetoload = "\ResultFiles\import_file-taxes.csv"
 number_itineraries = 200
 #CreateMonthlyNTEFile = "N" #If this is set to true it will produce 2 files (a business and a coach class file)
 

@@ -12,7 +12,7 @@ import datetime
 import pandas as pd
 from bs4 import BeautifulSoup
 
-def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itineraries, key, ServiceClass, GenerateReverseInd, DaysToTry):
+def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itineraries, key, ServiceClass, GenerateReverseInd, DaysToTry, HoursBtwnMinFlight):
 
     #Load List with American Flagged Carriers
     us_airlines = []
@@ -111,16 +111,16 @@ def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itine
 
 
         if len(str(requestData.loc[[index], ['OW Raw Itinerary']]))<50:  
-            apiResults = Code.SabreAPICall.apiCall(us_airports, us_airlines, str(requestData['Departure Airport Code'][index]), str(requestData['Destination Airport Code'][index]), "OneWay", DepartureDate, ReturnDate, number_itineraries, key, varServiceClass, DaysToTry)
+            apiResults = Code.SabreAPICall.apiCall(us_airports, us_airlines, str(requestData['Departure Airport Code'][index]), str(requestData['Destination Airport Code'][index]), "OneWay", DepartureDate, ReturnDate, number_itineraries, key, varServiceClass, DaysToTry, HoursBtwnMinFlight)
             requestData.loc[[index], ['OW Raw Itinerary']]= str(apiResults)             
 
         if len(str(requestData.loc[[index], ['RT Raw Itinerary']]))<50:  
-            apiResults = Code.SabreAPICall.apiCall(us_airports, us_airlines, str(requestData['Departure Airport Code'][index]), str(requestData['Destination Airport Code'][index]), "RoundTrip", DepartureDate, ReturnDate, number_itineraries, key, varServiceClass, DaysToTry)
+            apiResults = Code.SabreAPICall.apiCall(us_airports, us_airlines, str(requestData['Departure Airport Code'][index]), str(requestData['Destination Airport Code'][index]), "RoundTrip", DepartureDate, ReturnDate, number_itineraries, key, varServiceClass, DaysToTry, HoursBtwnMinFlight)
             requestData.loc[[index], ['RT Raw Itinerary']]= str(apiResults)                        
 
         if GenerateReverseInd == "Y":
             if len(str(requestData.loc[[index], ['OW_R Raw Itinerary']]))<50:  
-                apiResults = Code.SabreAPICall.apiCall(us_airports, us_airlines, str(requestData['Destination Airport Code'][index]), str(requestData['Departure Airport Code'][index]), "OneWay", DepartureDate, ReturnDate, number_itineraries, key, varServiceClass, DaysToTry)
+                apiResults = Code.SabreAPICall.apiCall(us_airports, us_airlines, str(requestData['Destination Airport Code'][index]), str(requestData['Departure Airport Code'][index]), "OneWay", DepartureDate, ReturnDate, number_itineraries, key, varServiceClass, DaysToTry, HoursBtwnMinFlight)
                 requestData.loc[[index], ['OW_R Raw Itinerary']]= str(apiResults)                        
 
         print('CLASS:'+varServiceClass+' ORG:'+str(requestData['Departure Airport Code'][index])+' DES:'+str(requestData['Destination Airport Code'][index])+' '+str(((index+1)/len(requestData.index))*100)+'% Complete')

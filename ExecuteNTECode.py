@@ -11,16 +11,16 @@ import Code.ProduceNTEFares
 import Code.CreateMasterNTE
 
 #Set your major parameters here
-DepartureDateString = "2017-11-18"
-ReturnDateString = "2017-11-26"
+DepartureDateString = "2017-12-23"
+ReturnDateString = "2018-01-07"
 #filetoload = "\ResultFiles\import_file.csv"
-filetoload = "\ResultFiles\import_file.csv"
+filetoload = "\ResultFiles\BC Test.csv"
 number_itineraries = 200
-CreateMonthlyNTEFileInd = "Y" #If this is set to true it will produce 2 files (a business and a coach class file)
+CreateMonthlyNTEFileInd = "N" #If this is set to true it will produce 2 files (a business and a coach class file)
 GenerateReverseInd = "Y" #This will get the reverse for the One way Fare. For example, if going to DCA to IND it will get IND to DCA.
 DaysToTry = 5 #It will increment the date up to this many times if the code does not find a fare.
 #END PARAMETERS: DON'T touch anything after this point.
-
+HoursBtwnMinFlight = 7 #Use will disregard itineraries that exceed the most direct route by this many hours 
 
 
 
@@ -31,15 +31,15 @@ key = Code.GetKey.GetSabreKey()
 if CreateMonthlyNTEFileInd == "Y":
     #Create a file for Coach Class("Y")
     ServiceClass = "Y"
-    Code.ProduceNTEFares.ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itineraries, key,ServiceClass, GenerateReverseInd, DaysToTry)
+    Code.ProduceNTEFares.ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itineraries, key,ServiceClass, GenerateReverseInd, DaysToTry, HoursBtwnMinFlight)
 
     #Create a file for Business Class("C")
     ServiceClass = "C"
-    Code.ProduceNTEFares.ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itineraries, key,ServiceClass, GenerateReverseInd, DaysToTry)
+    Code.ProduceNTEFares.ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itineraries, key,ServiceClass, GenerateReverseInd, DaysToTry, HoursBtwnMinFlight)
 else:
     #Create a file for Coach Class("Y")
     ServiceClass = "Y"
-    Code.ProduceNTEFares.ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itineraries, key,ServiceClass, GenerateReverseInd, DaysToTry)
+    Code.ProduceNTEFares.ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itineraries, key,ServiceClass, GenerateReverseInd, DaysToTry, HoursBtwnMinFlight)
 
 #Add new entries to NTE Masterfile
 Code.CreateMasterNTE.CreateMasterNTEList(NewDatafile=datafile, PathtoMasterNTEFile=my_path)
