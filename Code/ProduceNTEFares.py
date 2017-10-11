@@ -12,7 +12,18 @@ import datetime
 import pandas as pd
 from bs4 import BeautifulSoup
 
-def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itineraries, key, ServiceClass, GenerateReverseInd, DaysToTry, HoursBtwnMinFlight):
+
+def city_pair_check(dataset, origin, destination):
+    if len(
+            dataset[((dataset.ORIGIN_AIRPORT_ABBREV==origin) & (dataset.DESTINATION_AIRPORT_ABBREV==destination)) |
+                  ((dataset.ORIGIN_AIRPORT_ABBREV==destination) & (dataset.DESTINATION_AIRPORT_ABBREV==origin))  
+                 ]
+        ) > 0:
+        return "Warning: GSA City Pair"
+
+
+
+def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itineraries, key, ServiceClass, GenerateReverseInd, DaysToTry, HoursBtwnMinFlight, CpFile):
 
     #Load List with American Flagged Carriers
     us_airlines = []
@@ -33,6 +44,7 @@ def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itine
 
 
     print("start:" + str(datetime.datetime.now()))
+    CpData = pd.read_csv(CpFile)
     data1 = pd.read_csv(datafile)
     data1 =data1.dropna(axis=0, how='all')
     requestData = data1
@@ -52,6 +64,7 @@ def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itine
     requestData['RT Fare Calc']=""
     requestData['RT Routing']=""
     requestData['RT Fare Basis']=""
+    requestData['Warnings']=""
 
 
     if 'OW Raw Itinerary' not in requestData.columns:
@@ -151,6 +164,7 @@ def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itine
             for elem in itinerary_soup.find_all('farebasiscode'.lower()):
                 fare_basis = fare_basis + (elem.string + '-')
             requestData.loc[index:index:,('OW Fare Basis')]=fare_basis
+            requestData.loc[index:index:,('Warnings')]=city_pair_check(CpData, requestData['Departure Airport Code'][index], requestData['Destination Airport Code'][index])
     
     #Pull out the relavent ifnromation for round trip fares an place it into appropriate columns    
     for index, row in requestData.iterrows():
