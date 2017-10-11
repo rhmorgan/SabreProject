@@ -20,8 +20,16 @@ def city_pair_check(dataset, origin, destination):
                  ]
         ) > 0:
         return "Warning: GSA City Pair"
+    else:
+        return ""
 
-
+def sp_airport_check(origin, destination):
+    sp_airports = []
+    sp_airports = ['ISB','FNA','ROB','DAC','KHI','LOS','UET','LHE','PEW']
+    if any(e == origin or e == destination for e in sp_airports):
+        return "Warning: SP" 
+    else:
+        return ""
 
 def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itineraries, key, ServiceClass, GenerateReverseInd, DaysToTry, HoursBtwnMinFlight, CpFile):
 
@@ -29,6 +37,7 @@ def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itine
     us_airlines = []
     us_airlines = ['AS', 'AA','DL','F9','HA', 'B6','WN','NK','UA','VX','3M']
 
+    
     #Load List with all of the worlds airports    
     script_dir = os.path.dirname(__file__)
     file_path = os.path.join(script_dir, 'airports.json')
@@ -164,7 +173,8 @@ def ProduceNTEFile(datafile, DepartureDateString, ReturnDateString, number_itine
             for elem in itinerary_soup.find_all('farebasiscode'.lower()):
                 fare_basis = fare_basis + (elem.string + '-')
             requestData.loc[index:index:,('OW Fare Basis')]=fare_basis
-            requestData.loc[index:index:,('Warnings')]=city_pair_check(CpData, requestData['Departure Airport Code'][index], requestData['Destination Airport Code'][index])
+            requestData.loc[index:index:,('Warnings')]=str(city_pair_check(CpData, requestData['Departure Airport Code'][index], requestData['Destination Airport Code'][index])) +' '+ str(sp_airport_check(requestData['Departure Airport Code'][index], requestData['Destination Airport Code'][index]))
+ #           requestData.loc[index:index:,('Warnings')]=requestData.loc[index:index:,('Warnings')][0]+' '+str(sp_airport_check(requestData['Departure Airport Code'][index], requestData['Destination Airport Code'][index]))
     
     #Pull out the relavent ifnromation for round trip fares an place it into appropriate columns    
     for index, row in requestData.iterrows():
