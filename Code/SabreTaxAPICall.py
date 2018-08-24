@@ -39,7 +39,7 @@ def taxApiCall(us_airports, us_airlines, origin_airport, destination_airport, OW
     add_days_counter=1    
     api = apiCall(us_airports, us_airlines, origin_airport, destination_airport, OW_RT_Desc, DepartureDate, number_itineraries, key, ServiceClass, InternationalInd, GOV_FARE)
 
-    while (len(api)==0 and add_days_counter<5):
+    while (len(api)==0 and add_days_counter<3):
         date_1 = datetime.strptime(DepartureDate, "%Y-%m-%d")
         a = str(date_1 + timedelta(days=add_days_counter))
         newDepartureDateString = a[0:10]       
@@ -250,8 +250,13 @@ def apiCall(us_airports, us_airlines, origin_airport, destination_airport, OW_RT
                 itinerary_sequences_dict[elem['sequencenumber']] = float(price['amount'])    
 
             for farebasis in elem.find_all('farebasiscode'.lower()):
+                #if (
+                #        faretype in (farebasis.string)
+                #        ):
+                #    print(farebasis.string)
                 if (
-                    farebasis.string != faretype 
+#                    farebasis.string != faretype 
+                     faretype not in (farebasis.string)
                     ): 
                     #remove itineraries that don't meet criteria    
                     itinerary_sequences_dict.pop(elem['sequencenumber'], None)

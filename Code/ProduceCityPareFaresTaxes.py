@@ -164,7 +164,7 @@ def ProduceCityPareTaxFile(datafile, DepartureDateString, number_itineraries, ke
 #        ReturnDate  = ReturnDateString
 
 #Determine if it is a International Flight        
-        if str(requestData['origin_country'][index]) == 'USA' and str(requestData['destination_country'][index]) == 'USA':
+        if str(requestData['origin_country'][index]).strip() == 'USA' and str(requestData['destination_country'][index]).strip() == 'USA':
           InternationalInd = False
         else:
           InternationalInd = True
